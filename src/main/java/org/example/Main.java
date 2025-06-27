@@ -22,8 +22,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String filepath = "C:\\Users\\Gaurav\\Downloads\\HDFS_2k.log";
-        String templatePath = "C:\\Users\\Gaurav\\Downloads\\HDFS_2k.log_templates.csv";
+        String filepath = "raw log file path";
+        String templatePath = "log template file path";
 
         String os = System.getProperty("os.name").toLowerCase();
 
@@ -72,7 +72,7 @@ public class Main {
             System.out.println("Windows OS detected. HADOOP_HOME set.");
 
             // Set Windows local output path
-            String outputPath = "file:///C:/Users/Gaurav/Downloads/output_parsed_logs";
+            String outputPath = "outout directory path";
             parsedDF.write()
                     .option("header", true)
                     .mode("overwrite")
@@ -83,7 +83,7 @@ public class Main {
             System.out.println("Non-Windows OS detected. Skipping HADOOP_HOME setup.");
 
             // Set Linux/macOS local output path (e.g., to /tmp/output_parsed_logs)
-            String outputPath = "file:///home/gaurav/output_parsed_logs";
+            String outputPath = "outout directory path";
             parsedDF.write()
                     .option("header", true)
                     .mode("overwrite")
