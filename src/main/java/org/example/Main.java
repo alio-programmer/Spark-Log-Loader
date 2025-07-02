@@ -22,8 +22,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String filepath = "raw log file path";
-        String templatePath = "log template file path";
+        String filepath = "C:\\Users\\Gaurav\\Downloads\\HDFS.log";
+        String templatePath = "C:\\Users\\Gaurav\\Downloads\\HDFS_2k.log_templates.csv";
 
         String os = System.getProperty("os.name").toLowerCase();
 
@@ -37,8 +37,6 @@ public class Main {
         // STEP 1: Loading raw logs
         Extractrawlogs logs = new Extractrawlogs(spark);
         Dataset<Row> rawDF = logs.logLoader(filepath);
-        rawDF.show(10, false);
-        logger.info("Extracted total: {} number of rows", rawDF.count());
 
         // STEP 2: Extracting log templates
         TemplateExtractor templates = new TemplateExtractor(spark);
@@ -63,8 +61,12 @@ public class Main {
 
         // STEP 6: Matching templates to parsed logs
         TemplateMatcher tempmatch = new TemplateMatcher(spark);
-        Dataset<Row> parsedDF = tempmatch.matchTemplate(parseDF, broadval);
-        parsedDF.show(5, false);
+
+        Dataset<Row> parsedDF = tempmatch.matchTemplate(parseDF, broadval).cache();
+
+        System.out.println("Number of logs processed:"+parsedDF.count()); //action 1 to materialize full dataset in cache
+
+        parsedDF.show(5, false);   //action 2
         logger.info("Template matching completed");
 
         // STEP 7: Saving output (for different operating systems)
@@ -72,8 +74,8 @@ public class Main {
             System.out.println("Windows OS detected. HADOOP_HOME set.");
 
             // Set Windows local output path
-            String outputPath = "outout directory path";
-            parsedDF.write()
+            String outputPath = "C:\\Users\\Gaurav\\Downloads\\Main_output_parsed_logs";
+            parsedDF.write()      //action 3
                     .option("header", true)
                     .mode("overwrite")
                     .csv(outputPath);
@@ -83,8 +85,8 @@ public class Main {
             System.out.println("Non-Windows OS detected. Skipping HADOOP_HOME setup.");
 
             // Set Linux/macOS local output path (e.g., to /tmp/output_parsed_logs)
-            String outputPath = "outout directory path";
-            parsedDF.write()
+            String outputPath = "/home/gaurav/output-parsed-logs";
+            parsedDF.write()     //action 3
                     .option("header", true)
                     .mode("overwrite")
                     .csv(outputPath);
